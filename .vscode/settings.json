@@ -1,0 +1,18 @@
+{
+    "python.autoComplete.extraPaths": [
+        "/home/justin/catkin_ws/devel/lib/python3/dist-packages",
+        "/opt/ros/noetic/lib/python3/dist-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/home/justin/catkin_ws/devel/lib/python3/dist-packages",
+        "/opt/ros/noetic/lib/python3/dist-packages"
+    ],
+    "cSpell.words": [
+        "BUFFSIZE",
+        "clientsocket",
+        "listensocket",
+        "listesocket",
+        "MAXCONNECTIONS",
+        "rospy"
+    ]
+}

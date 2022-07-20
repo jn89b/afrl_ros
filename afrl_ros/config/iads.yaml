@@ -1,0 +1,4 @@
+#https://roboticsbackend.com/ros-param-yaml-format/
+iads_broker_ip: 10.3.3.10
+iads_broker_port: 1500
+
