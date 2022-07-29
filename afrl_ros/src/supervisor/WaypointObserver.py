@@ -24,7 +24,7 @@ class WaypointObserver():
         self.home_position = HomePosition()
         self.global_position = NavSatFix()
         self.mission_wp = WaypointList()
-        self.airspeed = None
+        
 
         #SUBSCRIBERS
         self.home_pos_sub = rospy.Subscriber('mavros/home_position/home',
@@ -43,8 +43,13 @@ class WaypointObserver():
                                             Odometry, 
                                             self.airspeed_cb)
         """"""
+        self.airspeed = None
         self.prev_pos = [None, None]
         self.curr_pos = [None, None]
+
+    def check_vals_exist(self):
+        """pass"""
+        pass
 
     def home_position_callback(self, data):
         self.home_position = data
@@ -71,7 +76,7 @@ class WaypointObserver():
 
     def airspeed_cb(self,data): 
         """get body airspeed of system"""
-        self.airspeed = data.twist.twist.linear.x 
+        self.airspeed = data.twist.twist.linear.x
 
 
     def distance_to_wp(self, lat:float, lon:float, alt:float):
@@ -106,8 +111,8 @@ class WaypointObserver():
                                             current_wp.z_alt) 
         # print("lat desired is ", lat_dist_desired, "remaining", remain_lat_d)
         if abs(lat_dist_desired) >= abs(remain_lat_d):
-            rospy.loginfo("too close to current distance dist_remaining: {0:.9f},{0:.9f},{0:.9f}".
-            format(remain_lat_d), (lat_dist_desired), (remain_lat_d))
+            # rospy.loginfo("too close to current distance dist_remaining: {0:.9f},{0:.9f},{0:.9f}".
+            # format(remain_lat_d), (lat_dist_desired), (remain_lat_d))
             return True
         else:
             return False
@@ -143,7 +148,7 @@ class WaypointObserver():
         prev_vector = self.compute_vector(prev_xy, wp_xy)
         curr_vector = self.compute_vector(curr_xy, wp_xy)
         cross_product = np.cross(prev_vector, curr_vector)
-        cross_tol = 10 #deg tolerance
+        cross_tol = 25 #deg tolerance
 
         #if cross product is close to 0 then we know two vectors are collinear
         if (abs(cross_product) <= cross_tol):
@@ -163,18 +168,24 @@ class WaypointObserver():
         if self.airspeed == None:
             rospy.loginfo("airspeed is NONE")
             return True
-        # if self.check_bad_distance(pti_duration_time):
-        #     return True
+        if self.check_bad_distance(pti_duration_time):
+            rospy.loginfo("bad distance")
+            return True
         if self.check_curve_path():
             rospy.loginfo("Curved path")
             return True
 
-        print("good test")
         return False
 
 
     def inter_no_go(self) -> Boolean:
-        pass
+        """intermediate no gos for waypoint checker"""
+        if self.check_curve_path():
+            rospy.loginfo("Curved path")
+            return True
+
+
+        return False
 
 
 

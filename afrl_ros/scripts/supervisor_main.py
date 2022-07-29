@@ -60,7 +60,8 @@ class AttitudeObserver():
                              orientation_q.z, orientation_q.w]
         self.rpy_radians = euler_from_quaternion(orientation_list)
         
-    
+
+
     def outside_limits(self,current_val, min_max_bounds) -> Boolean:
         """check if outside limits"""
         if current_val<= min_max_bounds[0] or current_val >= min_max_bounds[1]:
@@ -217,8 +218,6 @@ class SuperVisor():
             self.wp_obs.pre_no_go(pti_dur_time)
             ]
         
-        # return False
-
         if any(self.pre_no_go_list )== True:
             return True
         else:
@@ -226,10 +225,8 @@ class SuperVisor():
 
     def any_inter_no_gos(self):
         """intermediate no go checks during pti operations"""
-        pti_dur_time = self.pti.get_pti_params("FTI_FS_DURATION")
-
         self.inter_no_go_list = [
-            self.wp_obs.pre_no_go(pti_dur_time),
+            # self.wp_obs.inter_no_go(),
             self.att_obs.inter_no_go()
             ]
         
@@ -248,28 +245,24 @@ if __name__=='__main__':
     mavros.set_namespace()
 
     supervise = SuperVisor()
-    
     print_inter_once = False
 
-    while not rospy.is_shutdown():
-        
+    rospy.sleep(2.5)
+
+    while not rospy.is_shutdown():    
         pti_enable = supervise.pti.get_pti_params("FTI_ENABLE")
+        
+        if pti_enable == 1 and supervise.any_inter_no_gos() == False:
 
-        # if pti_enable == 1 and supervise.any_pre_no_gos() == True:
-        #     print("can't conduct pti, no go")
-        #     supervise.pti.set_pti_param("FTI_ENABLE" , 0)
-
-        if pti_enable == 1 and supervise.any_pre_no_gos() == False:
-            #supervise.pti.set_pti_param("FTI_ENABLE" , 1)
             while not rospy.is_shutdown():
-    
                 if print_inter_once == False:
                     print("Beginning PTI") 
                     print_inter_once = True
-                  
+                    
                 if supervise.pti_state == 4:
                     print("test was a success!")
                     old_enable_val = 1 
+                    print_inter_once = False
                     break
 
                 if supervise.any_inter_no_gos() == True:
@@ -277,17 +270,11 @@ if __name__=='__main__':
                     supervise.pti.set_pti_param("FTI_ENABLE" , 0)
                     print_inter_once = False
                     break
-        
+
                 rate.sleep()
-        
-            rate.sleep()
 
         rate.sleep()
 
-    # supervise.get_pti_params("FTI_ENABLE")
-    # supervise.set_pti_param("FTI_ENABLE", 0)
-    # supervise.check_dup_param_val("FTI_ENABLE", 0)
 
-    # supervise.pti.set_pti_param("FTI_ENABLE", 1)  
 
 
