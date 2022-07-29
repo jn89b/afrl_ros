@@ -16,7 +16,6 @@ Check if about to land
 
 Check if out of bounds of geofence 
 
-
 """
 
 class WaypointObserver():
@@ -144,8 +143,7 @@ class WaypointObserver():
         prev_vector = self.compute_vector(prev_xy, wp_xy)
         curr_vector = self.compute_vector(curr_xy, wp_xy)
         cross_product = np.cross(prev_vector, curr_vector)
-
-        cross_tol = 1.5
+        cross_tol = 10 #deg tolerance
 
         #if cross product is close to 0 then we know two vectors are collinear
         if (abs(cross_product) <= cross_tol):
@@ -171,6 +169,7 @@ class WaypointObserver():
             rospy.loginfo("Curved path")
             return True
 
+        print("good test")
         return False
 
 

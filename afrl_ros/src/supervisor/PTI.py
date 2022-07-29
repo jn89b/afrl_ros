@@ -14,7 +14,7 @@ class PTIParamVerifier():
             param.param_set(inject_param, int(inject_param_val))
             param.param_set("FTI_FS_AMP_BEGIN", float(level_vals[level_index]))
             param.param_set("FTI_FS_AMP_END", float(level_vals[level_index]))
-            print("set values")
+            print("set values", )
 
 
     def set_pti_param(self, pti_param: str , pti_param_val):
@@ -26,10 +26,11 @@ class PTIParamVerifier():
             return 
 
         if self.check_dup_param_val(pti_param, pti_param_val) == True:
-            print("duplicate value")
+            print("duplicate value", pti_param, " ", pti_param_val)
             return 
 
         param.param_set(pti_param, pti_param_val)
+        print("set param ", pti_param, " to ", pti_param_val)
         # pti_param_range = pti_config.PTI_CONFIG[pti_param]
  
         # # set amplitudes based on injection point
@@ -63,7 +64,7 @@ class PTIParamVerifier():
 
     def check_dup_param_val(self, pti_param: str, pti_param_val) -> bool:
         """check if parameter value is dup/same"""
-        pti_val = self.get_pti_params(pti_param)
+        pti_val = self.get_pti_param(pti_param)
         if pti_param_val == pti_val:
             return True
         else:
@@ -76,11 +77,11 @@ class PTIParamVerifier():
         else:
             return False
 
-    def get_pti_params(self, pti_param:str):
+    def get_pti_param(self, pti_param:str):
         """get pti params (str)"""
         if self.check_pti_param_exist(pti_param):
             pti_val = param.param_get(pti_param)
-            print("param value is of ", pti_param, " is ", pti_val)
+            print("current param ", pti_param, "value is ", pti_val)
             return pti_val
         else:
             print("hell naw", pti_param)

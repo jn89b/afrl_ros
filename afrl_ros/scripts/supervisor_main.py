@@ -217,6 +217,8 @@ class SuperVisor():
             self.wp_obs.pre_no_go(pti_dur_time)
             ]
         
+        # return False
+
         if any(self.pre_no_go_list )== True:
             return True
         else:
@@ -224,7 +226,10 @@ class SuperVisor():
 
     def any_inter_no_gos(self):
         """intermediate no go checks during pti operations"""
+        pti_dur_time = self.pti.get_pti_params("FTI_FS_DURATION")
+
         self.inter_no_go_list = [
+            self.wp_obs.pre_no_go(pti_dur_time),
             self.att_obs.inter_no_go()
             ]
         
@@ -238,32 +243,44 @@ if __name__=='__main__':
     #initiate your node here 
     rospy.init_node("afrl_param_node", anonymous=False)
     
-    rate_val = 15
+    rate_val = 25
     rate = rospy.Rate(rate_val)
     mavros.set_namespace()
 
     supervise = SuperVisor()
+    
+    print_inter_once = False
 
     while not rospy.is_shutdown():
         
         pti_enable = supervise.pti.get_pti_params("FTI_ENABLE")
 
-        if pti_enable == 1 and supervise.any_pre_no_gos() == True: 
-            # if supervise.any_pre_no_gos() == True:
-                print("can't conduct pti, no go")
-                supervise.pti.set_pti_param("FTI_ENABLE" , 0)
+        # if pti_enable == 1 and supervise.any_pre_no_gos() == True:
+        #     print("can't conduct pti, no go")
+        #     supervise.pti.set_pti_param("FTI_ENABLE" , 0)
 
-        else:
+        if pti_enable == 1 and supervise.any_pre_no_gos() == False:
             #supervise.pti.set_pti_param("FTI_ENABLE" , 1)
-                #4 IS STATE machine for done
-            while supervise.pti_state != 4 and pti_enable == 1:
+            while not rospy.is_shutdown():
+    
+                if print_inter_once == False:
+                    print("Beginning PTI") 
+                    print_inter_once = True
+                  
+                if supervise.pti_state == 4:
+                    print("test was a success!")
+                    old_enable_val = 1 
+                    break
+
                 if supervise.any_inter_no_gos() == True:
                     print("intermediate no go")
                     supervise.pti.set_pti_param("FTI_ENABLE" , 0)
+                    print_inter_once = False
                     break
-
-                
+        
                 rate.sleep()
+        
+            rate.sleep()
 
         rate.sleep()
 
