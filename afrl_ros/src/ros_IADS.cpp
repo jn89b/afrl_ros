@@ -16,7 +16,8 @@ enum
 };
 
 //implement iads protocol
-IADSInterface iads( "10.3.3.10", 1500, IADS__TOTAL);
+//need to set this ip of local host
+IADSInterface iads( "192.168.1.232", 1500, IADS__TOTAL);
 
 
 int main(int argc, char **argv) 
@@ -28,7 +29,7 @@ int main(int argc, char **argv)
 
     std::string ip_address; 
     //std::string ip = nh.getParam("iads_broker_ip", ip_address);
-    std::cout<<"ip is " << nh.getParam("iads_broker_ip", ip_address) << std::endl;
+    //std::cout<<"ip is " << nh.getParam("iads_broker_ip", ip_address) << std::endl;
     
 
     //instantiate UASInfo object 
@@ -47,7 +48,6 @@ int main(int argc, char **argv)
         // std::cout<<"sending message"<<std::endl;
         ros::spinOnce();
         rate.sleep();
-
     }
 
     return 0;

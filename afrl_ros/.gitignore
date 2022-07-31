@@ -2,3 +2,4 @@
 *.bag
 *.vc
 *.db
+/bagfiles

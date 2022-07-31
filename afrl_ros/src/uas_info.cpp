@@ -12,8 +12,8 @@ UASInfo::UASInfo(ros::NodeHandle* nh)
     gps_sub = nh->subscribe<sensor_msgs::NavSatFix>
         ("mavros/global_position/global", 20, &UASInfo::gps_cb, this);
 
-    att_sub = nh->subscribe<nav_msgs::Odometry>
-        ("mavros/odometry/in", 20, &UASInfo::att_cb, this);
+    att_sub = nh->subscribe<afrl_ros::RollPitchYawIADS>
+        ("iads_odom", 20, &UASInfo::att_cb, this);
 
 }
 
@@ -34,20 +34,29 @@ void UASInfo::gps_cb(const sensor_msgs::NavSatFix::ConstPtr& msg)
     global_pos[2] = msg->altitude;
 }
 
-void UASInfo::att_cb(const nav_msgs::Odometry::ConstPtr& msg)
-{
-    attitude_q[0] = msg->pose.pose.orientation.x;
-    attitude_q[1] = msg->pose.pose.orientation.y;
-    attitude_q[2] = msg->pose.pose.orientation.z;
-    attitude_q[3] = msg->pose.pose.orientation.w;
+// void UASInfo::att_cb(const nav_msgs::Odometry::ConstPtr& msg)
+// {
+//     attitude_q[0] = msg->pose.pose.orientation.x;
+//     attitude_q[1] = msg->pose.pose.orientation.y;
+//     attitude_q[2] = msg->pose.pose.orientation.z;
+//     attitude_q[3] = msg->pose.pose.orientation.w;
 
-    attitude_e =  get_euler(attitude_q);
+//     attitude_e =  get_euler(attitude_q);
     
-    attitude_deg[0] = rad2deg(attitude_e[0]);
-    attitude_deg[1] = rad2deg(attitude_e[1]);
-    attitude_deg[2] = rad2deg(attitude_e[2]);
-    //tf::Matrix3x3 m(q);
+//     attitude_deg[0] = rad2deg(attitude_e[0]);
+//     attitude_deg[1] = rad2deg(attitude_e[1]);
+//     attitude_deg[2] = rad2deg(attitude_e[2]);
+//     //tf::Matrix3x3 m(q);
+// }
+
+void UASInfo::att_cb(const afrl_ros::RollPitchYawIADS::ConstPtr& msg)
+{
+    attitude_deg[0] = msg->roll;
+    attitude_deg[1] = msg->pitch;
+    attitude_deg[2] = msg->yaw;
+
 }
+
 
 float UASInfo::rad2deg(float rad_val)
 {

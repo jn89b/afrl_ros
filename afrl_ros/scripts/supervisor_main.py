@@ -61,7 +61,6 @@ class AttitudeObserver():
         self.rpy_radians = euler_from_quaternion(orientation_list)
         
 
-
     def outside_limits(self,current_val, min_max_bounds) -> Boolean:
         """check if outside limits"""
         if current_val<= min_max_bounds[0] or current_val >= min_max_bounds[1]:
