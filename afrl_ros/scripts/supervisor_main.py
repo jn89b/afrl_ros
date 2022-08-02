@@ -63,7 +63,9 @@ class AttitudeObserver():
 
     def outside_limits(self,current_val, min_max_bounds) -> Boolean:
         """check if outside limits"""
-        if current_val<= min_max_bounds[0] or current_val >= min_max_bounds[1]:
+        print(min_max_bounds)
+        #if current_val<= min_max_bounds[0] or current_val >= min_max_bounds[1]:
+        if current_val <= -min_max_bounds or current_val>= min_max_bounds:
             return True
         else:
             return False
@@ -83,30 +85,37 @@ class AttitudeObserver():
         if self.check_empty_states() == True:
             return True
 
+        max_roll = param.param_get("MAX_ROLL")
+        max_pitch = param.param_get("MAX_PITCH")
+
+        max_roll_rate = param.param_get("MAX_ROLL_RATE")
+        max_pitch_rate = param.param_get("MAX_PITCH_RATE")
+
+        # print("params are", max_roll, max_pitch, max_roll_rate, max_pitch_rate)
         #check roll
-        if self.outside_limits(self.rpy_radians[0], attitude_constraints.ROLL_BOUND):
-            rospy.loginfo("beyond roll threshold: {0:.9f}".
-            format(self.rpy_radians[0]))
+        if self.outside_limits(self.rpy_radians[0], max_roll):
+            # rospy.loginfo("beyond roll threshold: {0:.9f}".
+            # format(self.rpy_radians[0]))
 
             return True
         
         #check pitch
-        if self.outside_limits(self.rpy_radians[1], attitude_constraints.PITCH_BOUND):
-            rospy.loginfo("beyond pitch threshold: {0:.9f}".
-            format(self.rpy_radians[1]))
+        if self.outside_limits(self.rpy_radians[1], np.deg2rad(max_pitch)):
+            # rospy.loginfo("beyond pitch threshold: {0:.9f}".
+            # format(self.rpy_radians[1]))
 
             return True
 
         #check roll rate 
-        if self.outside_limits(self.rpy_rates[0], attitude_constraints.ROLL_R_BOUND):
-            rospy.loginfo("beyond roll rate threshold: {0:.9f}".
-            format(self.rpy_rates[0]))
+        if self.outside_limits(self.rpy_rates[0], np.deg2rad(max_roll_rate)):
+            # rospy.loginfo("beyond roll rate threshold: {0:.9f}".
+            # format(self.rpy_rates[0]))
             return True
 
         #check pitch rate
-        if self.outside_limits(self.rpy_rates[0], attitude_constraints.PITCH_R_BOUND):
-            rospy.loginfo("beyond pitch rate threshold: {0:.9f}".
-            format(self.rpy_rates[1]))
+        if self.outside_limits(self.rpy_rates[0], np.deg2rad(max_pitch_rate)):
+            # rospy.loginfo("beyond pitch rate threshold: {0:.9f}".
+            # format(self.rpy_rates[1]))
             return True
 
         return False   
@@ -239,13 +248,14 @@ if __name__=='__main__':
     #initiate your node here 
     rospy.init_node("afrl_param_node", anonymous=False)
     
-    rate_val = 25
+    rate_val = 50
     rate = rospy.Rate(rate_val)
     mavros.set_namespace()
 
     supervise = SuperVisor()
     print_inter_once = False
 
+    #wait for params
     rospy.sleep(2.5)
 
     while not rospy.is_shutdown():    
@@ -255,17 +265,17 @@ if __name__=='__main__':
 
             while not rospy.is_shutdown():
                 if print_inter_once == False:
-                    print("Beginning PTI") 
+                    # print("Beginning PTI") 
                     print_inter_once = True
                     
                 if supervise.pti_state == 4:
-                    print("test was a success!")
+                    # print("test was a success!")
                     old_enable_val = 1 
                     print_inter_once = False
                     break
 
                 if supervise.any_inter_no_gos() == True:
-                    print("intermediate no go")
+                    # print("intermediate no go")
                     supervise.pti.set_pti_param("FTI_ENABLE" , 0)
                     print_inter_once = False
                     break

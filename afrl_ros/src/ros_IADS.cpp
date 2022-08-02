@@ -17,7 +17,7 @@ enum
 
 //implement iads protocol
 //need to set this ip of local host
-IADSInterface iads( "192.168.1.232", 1500, IADS__TOTAL);
+IADSInterface iads( "10.3.7.205", 1500, IADS__TOTAL);
 
 
 int main(int argc, char **argv) 
@@ -25,7 +25,7 @@ int main(int argc, char **argv)
     ros::init(argc,argv,"test_user");
     ros::NodeHandle nh;
     
-    ros:: Rate rate(20);
+    ros:: Rate rate(100);
 
     std::string ip_address; 
     //std::string ip = nh.getParam("iads_broker_ip", ip_address);

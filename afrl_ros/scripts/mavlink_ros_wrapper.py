@@ -12,12 +12,11 @@ import math
 # Import mavutil
 from pymavlink import mavutil
 from afrl_ros.msg import RollPitchYawIADS
-# from nav_msgs import Odometry
 
 
 def wrap_message(mavlink_msg):
-    """wraps mavlink message"""
-    mav_dict = msg.to_dict()
+    """wraps mavlink message and publishes to ROS Topic"""
+    mav_dict = mavlink_msg.to_dict()
     rpy_msg = RollPitchYawIADS()
     rpy_msg.roll = math.degrees(mav_dict["roll"])
     rpy_msg.pitch = math.degrees(mav_dict["pitch"])
@@ -54,46 +53,8 @@ if __name__ == '__main__':
             msg = master.recv_match()
             if not msg:
                 continue
-            if msg.get_type() == 'ATTITUDE':
-                
+            if msg.get_type() == 'ATTITUDE':                
                 wrap_message(msg)
-                # print("\n\n*****Got message: %s*****" % msg.get_type())
-        
-                # dict = msg.to_dict()
-                # print("\n")
-                # print("pitch is", dict["pitch"])
-
-                # print("Message: %s" % msg)
-                # print("\nAs dictionary: %s" % msg.to_dict())
-                # # Armed = MAV_STATE_STANDBY (4), Disarmed = MAV_STATE_ACTIVE (3)
-                # print("\nSystem status: %s" % msg.system_status)
-
-            # rate.sleep()    
-
+            
         except:
             pass
-
-
-    # # Get some information !
-    # while True:
-    #     try:
-    #         # print(master.recv_match().to_dict())
-    #         msg = master.recv_match()
-    #         if not msg:
-    #             continue
-    #         if msg.get_type() == 'ATTITUDE':
-
-    #             print("\n\n*****Got message: %s*****" % msg.get_type())
-        
-    #             dict = msg.to_dict()
-    #             print("\n")
-    #             print("pitch is", dict["pitch"])
-
-    #             print("Message: %s" % msg)
-    #             print("\nAs dictionary: %s" % msg.to_dict())
-    #             # Armed = MAV_STATE_STANDBY (4), Disarmed = MAV_STATE_ACTIVE (3)
-    #             print("\nSystem status: %s" % msg.system_status)
-
-    #     except:
-    #         pass
-
