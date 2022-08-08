@@ -17,7 +17,7 @@ enum
 
 //implement iads protocol
 //need to set this ip of local host
-IADSInterface iads( "10.3.7.205", 1500, IADS__TOTAL);
+IADSInterface iads( "192.168.231.110", 1500, IADS__TOTAL);
 
 
 int main(int argc, char **argv) 

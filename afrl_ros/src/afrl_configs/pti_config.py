@@ -25,7 +25,7 @@ input_control_index = {
     "High": 2
 }
 
-control_settings = [np.deg2rad(3), np.deg2rad(6), np.deg2rad(10)] #deg/s
+control_settings = [0.1, 0.3, 0.5] #percent
 rate_settings = [np.deg2rad(15), np.deg2rad(30), np.deg2rad(45)] #deg/s
 attitude_settings = [np.deg2rad(5), np.deg2rad(10), np.deg2rad(20)] #deg
 
@@ -42,9 +42,9 @@ FTI_INJXN_POINT = {
     "9" : attitude_settings,
 }
 
-# #min max values of inputs
-# FTI_INPUT_MODE = [0, 1] 
+LOOP_GAIN = {
+    "BASE" : 1.0,
+    "INCREASE": 1.2,
+    "DECREASE" : 0.8 
+}
 
-# FTI_ENABLE = [0, 1]
-
-# FTI_INJXN_POINT = []

@@ -3,7 +3,7 @@
 # Ros imports
 import rospy
 from std_msgs.msg import String
-from nav_msgs.msg import Ododmetry
+from nav_msgs.msg import Odometry
 
 # Sys imports
 import sys

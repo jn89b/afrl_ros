@@ -16,7 +16,6 @@ class PTIParamVerifier():
             param.param_set("FTI_FS_AMP_END", float(level_vals[level_index]))
             print("set values", )
 
-
     def set_pti_param(self, pti_param: str , pti_param_val):
         """checks if pti param exists, not duplicate,
          values are good, and then sets value"""
@@ -86,3 +85,13 @@ class PTIParamVerifier():
         else:
             print("hell naw", pti_param)
             return None
+
+
+    def set_loop_gain_param(self, pti_loop_gain:str):
+        """sets loop gain parameters"""
+
+        print("setting loop gain", pti_config.LOOP_GAIN)
+
+        param.param_set("FTI_LOOP_GAIN",
+            pti_config.LOOP_GAIN[pti_loop_gain])
+

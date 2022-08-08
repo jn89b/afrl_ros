@@ -44,7 +44,7 @@ if __name__ == '__main__':
     iads_odom_pub = rospy.Publisher("iads_odom", RollPitchYawIADS, queue_size=1)
 
     #connect to master might need to change this
-    master = mavutil.mavlink_connection('udpin:0.0.0.0:14540')
+    master = mavutil.mavlink_connection('udpin:0.0.0.0:14530')
     # # Make sure the connection is valid
     master.wait_heartbeat()
 

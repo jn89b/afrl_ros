@@ -1,3 +1,4 @@
+
 import mavros
 from afrl_configs import pti_config
 from mavros import param
@@ -76,6 +77,6 @@ if __name__=='__main__':
 
     pti = PTIParamVerifier()
     
-    val = param.param_get("MAX_ROLL")
+    val = param.param_set("FTI_INJXN_POINT",2)
 
     print("val is", val)
