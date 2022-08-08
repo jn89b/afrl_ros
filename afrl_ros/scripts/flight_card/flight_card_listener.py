@@ -103,7 +103,7 @@ if __name__=='__main__':
     # rate = rospy.Rate(rate_val)
     mavros.set_namespace()
     
-    port_number = '14540'
+    port_number = '14520'
     master = mavutil.mavlink_connection('udpin:0.0.0.0:'+port_number)
     # Make sure the connection is valid
     master.wait_heartbeat()
@@ -161,6 +161,9 @@ if __name__=='__main__':
                     pti_verify.set_loop_gain_param(pti_dict["FTI_LOOP_GAIN"])
                     pti_verify.set_pti_param("FTI_ENABLE", pti_dict["FTI_ENABLE"])
 
+                if "END" in message:
+                    print("test is ending", message)
+                    pti_verify.set_pti_param("FTI_ENABLE", 0)
 
             elif "PERFORMANCE" in message:
                 print("its performance")
@@ -168,6 +171,15 @@ if __name__=='__main__':
                 if fc_listener.is_perform_msg_correct(message):
                     airspeed_key, alt_key = fc_listener.parse_perform_msg(message)
                     print("retrieved messages: ", airspeed_key, alt_key)
+                    
+                    if alt_key not in performance_config.AGL_CONFIG:
+                        print("no alt key")
+                        continue
+
+                    if airspeed_key not in performance_config.AIRSPEED_CONFIG:
+                        print("no airspeed")
+                        continue
+
                     print("alt key ", performance_config.AGL_CONFIG[alt_key])
                     print("airspeed key ", performance_config.AIRSPEED_CONFIG[airspeed_key])
 
@@ -177,21 +189,27 @@ if __name__=='__main__':
 
                     send_airspeed_command(airspeed_val, master)
 
-                    while True:
-                        time.sleep(0.2)
-                        master.waypoint_set_current_send(des_wp)
-                        curr_wp = master.waypoint_current()
+                    ## check if in same level of desired waypoint
+                    curr_wp = master.waypoint_current()
+                    des_level = performance_config.AGL_LEVEL[alt_key]
 
-                        if curr_wp == des_wp:
-                            print("going to waypoint")
-                            break
+                    if curr_wp in des_level:
+                        print("at desired level", curr_wp, des_level)
+                        print("\n---------------------")
+                        continue
+                    
+                    else:
+                        while True:
+                            time.sleep(0.2)
+                            master.waypoint_set_current_send(des_wp)
+                            curr_wp = master.waypoint_current()
 
+                            if curr_wp == des_wp:
+                                print("going to waypoint")
+                                break
                 # else:
                 #     print("no")
 
-            elif "END" in message:
-                print("test is ending", message)
-                pti_verify.set_pti_param("FTI_ENABLE", 0)
             
             else:
                 print("bad inputs")
