@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 
+from multiprocessing import current_process
 import socket
 from xmlrpc.client import boolean
 # from threading import Thread
+from afrl_configs import performance_config
 from supervisor import PTI
 from supervisor import WaypointObserver
 import threading
@@ -11,6 +13,11 @@ import threading
 import rospy
 import mavros
 import math
+
+import time
+import sys
+from pymavlink import mavutil
+from pymavlink.dialects.v10 import common as mavlink1
 
 from nav_msgs.msg import Odometry
 from mavros_msgs.msg import  HomePosition, WaypointList
@@ -23,6 +30,7 @@ class FlightCardListener():
         self.port = PORT 
         self.max_connections = MAXCONNECTIONS
         self.correct_msg_len = 6
+        self.correct_perf_len = 5
         #self.client_thread = Thread(target=self.listen_client, args=())
 
 
@@ -32,6 +40,21 @@ class FlightCardListener():
             return True
         else:
             return False
+
+    def is_perform_msg_correct(self, client_msg) -> boolean:
+        if len(client_msg) == self.correct_perf_len:
+            return True
+        else:
+            return False
+
+    def parse_perform_msg(self, client_msg) -> list:
+        time_duration = float(client_msg[1])
+        velocity = float(client_msg[2])
+        airspeed_key = client_msg[3]
+        altitude_key = client_msg[4]
+        #loop_gain_setting = client_msg[5]
+
+        return [airspeed_key, altitude_key]
 
     def parse_msg(self, client_msg)-> dict:
         """parse message and return as dictionary"""
@@ -59,12 +82,32 @@ def close_socket(socket:socket):
     print("closing socket", socket)
     socket.close()
 
+def send_airspeed_command(airspeed,master):
+    master.mav.command_long_send(
+    master.target_system, 
+    master.target_component,
+    mavutil.mavlink.MAV_CMD_DO_CHANGE_SPEED, #command
+    0, #confirmation
+    0, #Speed type (0=Airspeed, 1=Ground Speed, 2=Climb Speed, 3=Descent Speed)
+    airspeed, #Speed #m/s
+    -1, #Throttle (-1 indicates no change) % 
+    0, 0, 0, 0 #ignore other parameters
+    )
+    print("change airspeed")
+
+
 if __name__=='__main__':
 
     # rospy.init_node("flight_card_listener", anonymous=False)
     # rate_val = 10
     # rate = rospy.Rate(rate_val)
     mavros.set_namespace()
+    
+    port_number = '14540'
+    master = mavutil.mavlink_connection('udpin:0.0.0.0:'+port_number)
+    # Make sure the connection is valid
+    master.wait_heartbeat()
+    print("got heartbeat")
 
     PORT = 9876
     MAXCONNECTIONS = 2
@@ -98,28 +141,53 @@ if __name__=='__main__':
             message = message_packet.split()
             print("message is", message)
 
-            if fc_listener.is_msg_correct(message):
+            if "FREQ_SWEEP" in message:
 
-                #check if we SHOULD do this test based on prechecks
-                good_message = message
-                pti_dict = fc_listener.parse_msg(good_message)
+                if fc_listener.is_msg_correct(message):
 
-                #if waypoint_observe.pre_no_go(pti_dict["FTI_FS_DURATION"]) == True:
+                    #check if we SHOULD do this test based on prechecks
+                    good_message = message
+                    pti_dict = fc_listener.parse_msg(good_message)
 
-                pti_verify.set_injection_vals("FTI_INJXN_POINT", 
-                            pti_dict["FTI_INJXN_POINT"], pti_dict["FTI_FS_AMP_BEGIN"])
+                    #if waypoint_observe.pre_no_go(pti_dict["FTI_FS_DURATION"]) == True:
 
-                pti_verify.set_pti_param("FTI_MODE", pti_dict["FTI_MODE"])
-                pti_verify.set_pti_param("FTI_FS_DURATION", pti_dict["FTI_FS_DURATION"])
-                print(pti_dict["FTI_LOOP_GAIN"])
+                    pti_verify.set_injection_vals("FTI_INJXN_POINT", 
+                                pti_dict["FTI_INJXN_POINT"], pti_dict["FTI_FS_AMP_BEGIN"])
 
-                pti_verify.set_loop_gain_param(pti_dict["FTI_LOOP_GAIN"])
-                pti_verify.set_pti_param("FTI_ENABLE", pti_dict["FTI_ENABLE"])
-                
-                
-                
+                    pti_verify.set_pti_param("FTI_MODE", pti_dict["FTI_MODE"])
+                    pti_verify.set_pti_param("FTI_FS_DURATION", pti_dict["FTI_FS_DURATION"])
+                    # print(pti_dict["FTI_ENABLE"])
+                    
+                    pti_verify.set_loop_gain_param(pti_dict["FTI_LOOP_GAIN"])
+                    pti_verify.set_pti_param("FTI_ENABLE", pti_dict["FTI_ENABLE"])
+
+
+            elif "PERFORMANCE" in message:
+                print("its performance")
+
+                if fc_listener.is_perform_msg_correct(message):
+                    airspeed_key, alt_key = fc_listener.parse_perform_msg(message)
+                    print("retrieved messages: ", airspeed_key, alt_key)
+                    print("alt key ", performance_config.AGL_CONFIG[alt_key])
+                    print("airspeed key ", performance_config.AIRSPEED_CONFIG[airspeed_key])
+
+                    airspeed_val = performance_config.AIRSPEED_CONFIG[airspeed_key]
+                    des_wp = performance_config.AGL_CONFIG[alt_key]
+                    curr_wp = master.waypoint_current()
+
+                    send_airspeed_command(airspeed_val, master)
+
+                    while True:
+                        time.sleep(0.2)
+                        master.waypoint_set_current_send(des_wp)
+                        curr_wp = master.waypoint_current()
+
+                        if curr_wp == des_wp:
+                            print("going to waypoint")
+                            break
+
                 # else:
-                #     print("no go")
+                #     print("no")
 
             elif "END" in message:
                 print("test is ending", message)
