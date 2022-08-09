@@ -207,9 +207,6 @@ if __name__=='__main__':
                             if curr_wp == des_wp:
                                 print("going to waypoint")
                                 break
-                # else:
-                #     print("no")
-
             
             else:
                 print("bad inputs")

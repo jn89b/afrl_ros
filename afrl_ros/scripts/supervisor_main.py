@@ -85,11 +85,11 @@ class AttitudeObserver():
         if self.check_empty_states() == True:
             return True
 
-        max_roll = param.param_get("MAX_ROLL")
-        max_pitch = param.param_get("MAX_PITCH")
+        max_roll = param.param_get("SC_ROLL_ANG_MAX")
+        max_pitch = param.param_get("SC_PITCH_ANG_MAX")
 
-        max_roll_rate = param.param_get("MAX_ROLL_RATE")
-        max_pitch_rate = param.param_get("MAX_PITCH_RATE")
+        max_roll_rate = param.param_get("SC_ROLL_RAT_MAX")
+        max_pitch_rate = param.param_get("SC_PITCH_RAT_MAX")
 
         # print("params are", max_roll, max_pitch, max_roll_rate, max_pitch_rate)
         #check roll
