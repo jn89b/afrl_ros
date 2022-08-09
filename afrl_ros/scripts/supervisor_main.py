@@ -269,7 +269,7 @@ if __name__=='__main__':
                     print_inter_once = True
                     
                 if supervise.pti_state == 4:
-                    print("test was a success!")
+                    # print("test was a success!")
                     old_enable_val = 1 
                     print_inter_once = False
                     break
