@@ -2,7 +2,7 @@
 AIRSPEED_CONFIG = {
     "MINAirspeed": 11, 
     "CRUISEAirspeed": 13,
-    "MAXAirspeed": 19
+    "MAXAirspeed": 25
 }
 
 """altitude config, connects to waypoint frame"""

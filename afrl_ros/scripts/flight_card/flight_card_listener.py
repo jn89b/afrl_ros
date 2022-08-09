@@ -101,22 +101,24 @@ if __name__=='__main__':
     # rospy.init_node("flight_card_listener", anonymous=False)
     # rate_val = 10
     # rate = rospy.Rate(rate_val)
-    mavros.set_namespace()
+    # mavros.set_namespace()
     
-    # port_number = '14520'
-    master = mavutil.mavlink_connection('udpin:0.0.0.0:'+mav_ports.FLIGHT_CARD_PORT)
+    # # port_number = '14520'
+    master = mavutil.mavlink_connection('udpin:0.0.0.0:'+ mav_ports.FLIGHT_CARD_PORT)
     # Make sure the connection is valid
     master.wait_heartbeat()
     print("got heartbeat")
 
     PORT = 9876
     MAXCONNECTIONS = 2
-    THIS_IP = "10.3.7.205"
-    # THIS_IP = "192.168.231.110"
+
+    # THIS_IP = "10.3.7.205" #this is at airforce
+    THIS_IP = "192.168.231.110" #cell phone
+
     BUFFSIZE = 1024
 
     listensocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    listensocket.setsockopt(socket.SOL_SOCKET, socket.mav_wrapper_portSO_REUSEADDR, 1)
+    listensocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     listensocket.bind((THIS_IP, PORT))
 
     #open server
@@ -132,7 +134,7 @@ if __name__=='__main__':
 
     #while not rospy.is_shutdown(): 
     while True:
-        # clientsocket = None 
+        clientsocket = None 
 
         try:      
             clientsocket,clientaddress = listensocket.accept()
