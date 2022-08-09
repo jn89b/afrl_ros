@@ -4,16 +4,26 @@
 #include <uas_info.h>
 
 
+// enum
+// {
+//     IADS__TEST_INPUT
+//     , IADS__TEST_INPUT2
+//     , IADS__TEST_INPUT3
+//     , IADS__TEST_INPUT4
+//     , IADS__TEST_INPUT5
+//     , IADS__TEST_INPUT6
+//     , IADS__TOTAL
+// };
+
 enum
 {
-    IADS__TEST_INPUT
-    , IADS__TEST_INPUT2
-    , IADS__TEST_INPUT3
-    , IADS__TEST_INPUT4
-    , IADS__TEST_INPUT5
-    , IADS__TEST_INPUT6
-    , IADS__TOTAL
+    IADS__ROLL_RATE, 
+    IADS__PITCH_RATE, 
+    IADS__ROLL, 
+    IADS__PITCH, 
+    IADS__TOTAL
 };
+
 
 //implement iads protocol
 //need to set this ip of local host
@@ -38,13 +48,11 @@ int main(int argc, char **argv)
     while (ros::ok())
     {
         std::cout<<"uas rpy deg is " << uas_info.attitude_deg << std::endl;
-        iads.setParameter( IADS__TEST_INPUT, uas_info.attitude_deg[0])
-        .setParameter( IADS__TEST_INPUT2, uas_info.attitude_deg[1])
-        .setParameter( IADS__TEST_INPUT3, uas_info.attitude_deg[2])
-        .setParameter( IADS__TEST_INPUT4, uas_info.global_pos[0])
-        .setParameter( IADS__TEST_INPUT5, uas_info.global_pos[1])
-        .setParameter( IADS__TEST_INPUT6, uas_info.global_pos[2])
-        .sendData();
+        iads.setParameter(IADS__ROLL_RATE, uas_info.attitude_rate_deg[0])
+            .setParameter(IADS__PITCH_RATE, uas_info.attitude_rate_deg[1])
+            .setParameter(IADS__ROLL, uas_info.attitude_deg[0])
+            .setParameter(IADS__PITCH, uas_info.attitude_deg[1])
+            .sendData();
         // std::cout<<"sending message"<<std::endl;
         ros::spinOnce();
         rate.sleep();

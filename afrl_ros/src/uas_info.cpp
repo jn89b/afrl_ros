@@ -55,6 +55,10 @@ void UASInfo::att_cb(const afrl_ros::RollPitchYawIADS::ConstPtr& msg)
     attitude_deg[1] = msg->pitch;
     attitude_deg[2] = msg->yaw;
 
+    attitude_rate_deg[0] = msg->rollspeed;
+    attitude_rate_deg[1] = msg->pitchspeed;
+    attitude_rate_deg[2] = msg->yawspeed;
+
 }
 
 

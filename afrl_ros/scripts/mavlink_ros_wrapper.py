@@ -22,6 +22,10 @@ def wrap_message(mavlink_msg):
     rpy_msg.pitch = math.degrees(mav_dict["pitch"])
     rpy_msg.yaw = math.degrees(mav_dict["yaw"])
     
+    rpy_msg.rollspeed = math.degrees(mav_dict["rollspeed"])
+    rpy_msg.pitchspeed = math.degrees(mav_dict["pitchspeed"])
+    rpy_msg.yawspeed = math.degrees(mav_dict["yawspeed"])
+    
     iads_odom_pub.publish(rpy_msg)
 
 if __name__ == '__main__':

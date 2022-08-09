@@ -47,8 +47,7 @@ class UASInfo
         // Eigen::Vector4d attitude_q; //quat attitudes
         // Eigen::Vector3d attitude_e; // euler attitudes in radians
         Eigen::Vector3d attitude_deg; // euler_attitude in degrees
-
-
+        Eigen::Vector3d attitude_rate_deg; // euler rates in degrees
 
 };
 #endif
