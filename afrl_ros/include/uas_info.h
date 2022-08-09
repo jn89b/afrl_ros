@@ -15,6 +15,7 @@
 #include <mavros_msgs/CommandBool.h>
 #include <sensor_msgs/NavSatFix.h>
 #include <afrl_ros/RollPitchYawIADS.h>
+#include <afrl_ros/HeadingAirspeedAltitudeIADS.h>
 
 #include <mavros_msgs/State.h>
 #include <math.h>  
@@ -26,13 +27,14 @@ class UASInfo
     private:
         ros::NodeHandle nh;
 
-        ros::Subscriber state_sub, gps_sub, att_sub;
+        ros::Subscriber state_sub, gps_sub, att_sub, vfr_sub;
         mavros_msgs::State current_state;
 
         void state_cb(const mavros_msgs::State::ConstPtr& msg);
         void gps_cb(const sensor_msgs::NavSatFix::ConstPtr& msg);
         //void att_cb(const nav_msgs::Odometry::ConstPtr& msg);
         void att_cb(const afrl_ros::RollPitchYawIADS::ConstPtr& msg);
+        void vfr_cb(const afrl_ros::HeadingAirspeedAltitudeIADS::ConstPtr& msg);
 
         Eigen::Vector3d get_euler(Eigen::Vector4d quat_vec);
         float rad2deg(float rad_val);
@@ -48,6 +50,7 @@ class UASInfo
         // Eigen::Vector3d attitude_e; // euler attitudes in radians
         Eigen::Vector3d attitude_deg; // euler_attitude in degrees
         Eigen::Vector3d attitude_rate_deg; // euler rates in degrees
+        Eigen::Vector3d vfr; //heading, airspeed, alt
 
 };
 #endif

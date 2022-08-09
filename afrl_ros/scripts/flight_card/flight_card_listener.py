@@ -4,7 +4,7 @@ from multiprocessing import current_process
 import socket
 from xmlrpc.client import boolean
 # from threading import Thread
-from afrl_configs import performance_config
+from afrl_configs import performance_config, mav_ports
 from supervisor import PTI
 from supervisor import WaypointObserver
 import threading
@@ -103,8 +103,8 @@ if __name__=='__main__':
     # rate = rospy.Rate(rate_val)
     mavros.set_namespace()
     
-    port_number = '14520'
-    master = mavutil.mavlink_connection('udpin:0.0.0.0:'+port_number)
+    # port_number = '14520'
+    master = mavutil.mavlink_connection('udpin:0.0.0.0:'+mav_ports.FLIGHT_CARD_PORT)
     # Make sure the connection is valid
     master.wait_heartbeat()
     print("got heartbeat")
@@ -116,7 +116,7 @@ if __name__=='__main__':
     BUFFSIZE = 1024
 
     listensocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    listensocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    listensocket.setsockopt(socket.SOL_SOCKET, socket.mav_wrapper_portSO_REUSEADDR, 1)
     listensocket.bind((THIS_IP, PORT))
 
     #open server

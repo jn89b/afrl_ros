@@ -1,0 +1,3 @@
+float64 heading
+float64 airspeed
+float64 altitude

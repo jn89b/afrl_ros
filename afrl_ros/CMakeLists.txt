@@ -68,6 +68,7 @@ catkin_python_setup()
 add_message_files(
   FILES
   RollPitchYawIADS.msg
+  HeadingAirspeedAltitudeIADS.msg
 )
 
 ## Generate services in the 'srv' folder

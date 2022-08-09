@@ -15,6 +15,9 @@ UASInfo::UASInfo(ros::NodeHandle* nh)
     att_sub = nh->subscribe<afrl_ros::RollPitchYawIADS>
         ("iads_odom", 20, &UASInfo::att_cb, this);
 
+    vfr_sub = nh->subscribe<afrl_ros::HeadingAirspeedAltitudeIADS>
+        ("iads_vfr", 20, &UASInfo::vfr_cb, this);
+
 }
 
 void UASInfo::init_vals()
@@ -61,6 +64,12 @@ void UASInfo::att_cb(const afrl_ros::RollPitchYawIADS::ConstPtr& msg)
 
 }
 
+void UASInfo::vfr_cb(const afrl_ros::HeadingAirspeedAltitudeIADS::ConstPtr& msg)
+{
+    vfr[0] = msg-> heading;
+    vfr[1] = msg-> airspeed;
+    vfr[2] = msg-> altitude;
+}
 
 float UASInfo::rad2deg(float rad_val)
 {

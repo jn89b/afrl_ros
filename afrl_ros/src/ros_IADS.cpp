@@ -18,9 +18,13 @@
 enum
 {
     IADS__ROLL_RATE, 
-    IADS__PITCH_RATE, 
+    IADS__PITCH_RATE,
+    IADS__YAW_RATE, 
     IADS__ROLL, 
     IADS__PITCH, 
+    IADS__HEADING,
+    IADS__AIRSPEED,
+    IADS__ALTITUDE,
     IADS__TOTAL
 };
 
@@ -50,9 +54,13 @@ int main(int argc, char **argv)
         std::cout<<"uas rpy deg is " << uas_info.attitude_deg << std::endl;
         iads.setParameter(IADS__ROLL_RATE, uas_info.attitude_rate_deg[0])
             .setParameter(IADS__PITCH_RATE, uas_info.attitude_rate_deg[1])
+            .setParameter(IADS__YAW_RATE, uas_info.attitude_rate_deg[2])
             .setParameter(IADS__ROLL, uas_info.attitude_deg[0])
             .setParameter(IADS__PITCH, uas_info.attitude_deg[1])
-            .sendData();
+            .setParameter(IADS__HEADING, uas_info.vfr[0])
+            .setParameter(IADS__AIRSPEED, uas_info.vfr[1])
+            .setParameter(IADS__ALTITUDE, uas_info.vfr[2])
+        .sendData();
         // std::cout<<"sending message"<<std::endl;
         ros::spinOnce();
         rate.sleep();
