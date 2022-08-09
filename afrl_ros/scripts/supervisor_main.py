@@ -63,7 +63,7 @@ class AttitudeObserver():
 
     def outside_limits(self,current_val, min_max_bounds) -> Boolean:
         """check if outside limits"""
-        print(min_max_bounds)
+        # print(min_max_bounds)
         #if current_val<= min_max_bounds[0] or current_val >= min_max_bounds[1]:
         if current_val <= -min_max_bounds or current_val>= min_max_bounds:
             return True
@@ -93,7 +93,7 @@ class AttitudeObserver():
 
         # print("params are", max_roll, max_pitch, max_roll_rate, max_pitch_rate)
         #check roll
-        if self.outside_limits(self.rpy_radians[0], max_roll):
+        if self.outside_limits(self.rpy_radians[0], np.deg2rad(max_roll)):
             # rospy.loginfo("beyond roll threshold: {0:.9f}".
             # format(self.rpy_radians[0]))
 
@@ -269,13 +269,13 @@ if __name__=='__main__':
                     print_inter_once = True
                     
                 if supervise.pti_state == 4:
-                    # print("test was a success!")
+                    print("test was a success!")
                     old_enable_val = 1 
                     print_inter_once = False
                     break
 
                 if supervise.any_inter_no_gos() == True:
-                    # print("intermediate no go")
+                    print("intermediate no go")
                     supervise.pti.set_pti_param("FTI_ENABLE" , 0)
                     print_inter_once = False
                     break
